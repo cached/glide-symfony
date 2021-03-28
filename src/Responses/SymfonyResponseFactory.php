@@ -5,6 +5,7 @@ namespace League\Glide\Responses;
 use League\Flysystem\FilesystemOperator;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\StreamedResponse;
+use Symfony\Component\HttpKernel\EventListener\AbstractSessionListener;
 
 class SymfonyResponseFactory implements ResponseFactoryInterface
 {
@@ -34,6 +35,7 @@ class SymfonyResponseFactory implements ResponseFactoryInterface
         $stream = $cache->readStream($path);
 
         $response = new StreamedResponse();
+        $response->headers->set(AbstractSessionListener::NO_AUTO_CACHE_CONTROL_HEADER, 'true');
         $response->headers->set('Content-Type', $cache->mimeType($path));
         $response->headers->set('Content-Length', $cache->fileSize($path));
         $response->setPublic();
