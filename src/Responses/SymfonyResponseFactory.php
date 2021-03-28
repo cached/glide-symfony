@@ -2,10 +2,9 @@
 
 namespace League\Glide\Responses;
 
-use League\Flysystem\FilesystemOperator;
+use League\Flysystem\FilesystemInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\StreamedResponse;
-use Symfony\Component\HttpKernel\EventListener\AbstractSessionListener;
 
 class SymfonyResponseFactory implements ResponseFactoryInterface
 {
@@ -26,24 +25,24 @@ class SymfonyResponseFactory implements ResponseFactoryInterface
 
     /**
      * Create the response.
-     * @param  FilesystemOperator $cache The cache file system.
+     * @param  FilesystemInterface $cache The cache file system.
      * @param  string              $path  The cached file path.
      * @return StreamedResponse    The response object.
      */
-    public function create(FilesystemOperator $cache, $path)
+    public function create(FilesystemInterface $cache, $path)
     {
         $stream = $cache->readStream($path);
 
         $response = new StreamedResponse();
         $response->headers->set(AbstractSessionListener::NO_AUTO_CACHE_CONTROL_HEADER, 'true');
-        $response->headers->set('Content-Type', $cache->mimeType($path));
-        $response->headers->set('Content-Length', $cache->fileSize($path));
+        $response->headers->set('Content-Type', $cache->getMimetype($path));
+        $response->headers->set('Content-Length', $cache->getSize($path));
         $response->setPublic();
         $response->setMaxAge(31536000);
         $response->setExpires(date_create()->modify('+1 years'));
 
         if ($this->request) {
-            $response->setLastModified(date_create()->setTimestamp($cache->lastModified($path)));
+            $response->setLastModified(date_create()->setTimestamp($cache->getTimestamp($path)));
             $response->isNotModified($this->request);
         }
 
