@@ -5,6 +5,7 @@ namespace League\Glide\Responses;
 use League\Flysystem\FilesystemInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\StreamedResponse;
+use Symfony\Component\HttpKernel\EventListener\AbstractSessionListener;
 
 class SymfonyResponseFactory implements ResponseFactoryInterface
 {
